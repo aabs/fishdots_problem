@@ -37,11 +37,11 @@ function assert_eq -d "check if argv[1] is equal to argv[2]" -a left right
     assert (test $left = $right) "$left is not equal to $right"
 end
 
-function assert -d "check if argv[1] is true and wail if not" -a predicate error_msg
+function assert -d "check if argv[1] is true and wail if not" 
     if test $status -eq 0
         true
     else
-        echo "ASSERTION FAILURE: $error_msg"
+        echo "ASSERTION FAILURE: " $argv[1]
         false
     end
 end

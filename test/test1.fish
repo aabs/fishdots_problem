@@ -26,7 +26,33 @@ function _fdp_test_can_append_to_named_section1 -d "try to insert a string in th
 end
 
 function _fdp_test_new_prob_file_contains_title
-    ls > /dev/null ^ /dev/null
+    # arrange
+    set -l title sghsjdjdhgfjhsjs
+    set -l summary jfhjdhgfjdghfgjdfd
+
+    # act
+    problem_start_new_problem_file $title $summary
+    
+    # assert
+    assert (test -f $FD_PROB_CURRENT) "current prob should exist as a file"
+    assert (grep $title $FD_PROB_CURRENT >/dev/null) "should be able to find the title in the file"
+    assert (grep $summary $FD_PROB_CURRENT >/dev/null) "should be able to find the title in the file"
+end
+
+function _fdp_test_new_prob_file_contains_scaffolding
+    # arrange
+    set -l title sghsjdjdhgfjhsjs
+    set -l summary jfhjdhgfjdghfgjdfd
+
+    # act
+    problem_start_new_problem_file $title $summary
+    
+    # assert
+    assert (grep "# PROBLEM" $FD_PROB_CURRENT >/dev/null) "must contain '# PROBLEM'"
+    assert (grep "# KNOWN" $FD_PROB_CURRENT >/dev/null) "must contain '# KNOWN'"
+    assert (grep "# IDEAS" $FD_PROB_CURRENT >/dev/null) "must contain '# IDEAS'"
+    assert (grep "# QUESTIONS" $FD_PROB_CURRENT >/dev/null) "must contain '# QUESTIONS'"
+    assert (grep "# TESETS" $FD_PROB_CURRENT >/dev/null) "must contain '# TESTS'"
 end
 
 function _fdp_test_eq_fail
@@ -44,7 +70,7 @@ function go
     source test/test1.fish
     set cases 
 
-    __fixture "__setup" "__teardown" '_fdp_test_eq_fail _fdp_test_eq_pass _fdp_test_can_append_to_named_section1 _fdp_test_new_prob_file_contains_title'
+    __fixture "__setup" "__teardown" '_fdp_test_eq_fail _fdp_test_eq_pass _fdp_test_can_append_to_named_section1 _fdp_test_new_prob_file_contains_title _fdp_test_new_prob_file_contains_scaffolding'
 
 
 end
