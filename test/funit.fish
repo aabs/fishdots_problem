@@ -1,7 +1,8 @@
 function __fixture -d "run all the unit tests"
+    
     set -l fn_setup $argv[1]
     set -l fn_teardown $argv[2]
-    set -l test_cases (string split " " $argv[3])
+    set -l test_cases $argv[-1..3]
     set -l cases_to_run (count $test_cases)
     ok "FUnit running $cases_to_run cases"
     for t in $test_cases

@@ -70,7 +70,12 @@ function go
     source test/test1.fish
     set cases 
 
-    __fixture "__setup" "__teardown" '_fdp_test_eq_fail _fdp_test_eq_pass _fdp_test_can_append_to_named_section1 _fdp_test_new_prob_file_contains_title _fdp_test_new_prob_file_contains_scaffolding'
+    __fixture "__setup" "__teardown" \
+        "_fdp_test_eq_fail" \
+        "_fdp_test_eq_pass" \
+        "_fdp_test_can_append_to_named_section1" \
+        "_fdp_test_new_prob_file_contains_title" \
+        "_fdp_test_new_prob_file_contains_scaffolding"
 
 
 end
