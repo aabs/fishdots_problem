@@ -1,3 +1,19 @@
+function go
+    cd ~/dev/fishdots_problem/
+    source test/funit.fish
+    source test/test1.fish
+    set cases 
+
+    __fixture "__setup" "__teardown" \
+        "_fdp_test_eq_fail" \
+        "_fdp_test_eq_pass" \
+        "_fdp_test_can_append_to_named_section1" \
+        "_fdp_test_new_prob_file_contains_title" \
+        "_fdp_test_new_prob_file_contains_scaffolding"
+
+
+end
+
 function __setup
     set -x FDP_TEST_DEV_DIR "$HOME/dev/fishdots_problem"
     source $FDP_TEST_DEV_DIR/init/rc0.d/01-env.fish
@@ -64,18 +80,3 @@ function _fdp_test_eq_pass
 end
 
 
-function go
-    cd ~/dev/fishdots_problem/
-    source test/funit.fish
-    source test/test1.fish
-    set cases 
-
-    __fixture "__setup" "__teardown" \
-        "_fdp_test_eq_fail" \
-        "_fdp_test_eq_pass" \
-        "_fdp_test_can_append_to_named_section1" \
-        "_fdp_test_new_prob_file_contains_title" \
-        "_fdp_test_new_prob_file_contains_scaffolding"
-
-
-end
