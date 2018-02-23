@@ -5,11 +5,10 @@ function go
     set cases 
 
     __fixture "__setup" "__teardown" \
-        "_fdp_test_eq_fail" \
-        "_fdp_test_eq_pass" \
-        "_fdp_test_can_append_to_named_section1" \
-        "_fdp_test_new_prob_file_contains_title" \
-        "_fdp_test_new_prob_file_contains_scaffolding"
+        "can_append_to_named_section1" \
+        "new_prob_file_contains_title" \
+        "new_prob_file_contains_scaffolding" \
+        "switching_problem_switches_current_problem_file"
 
 
 end
@@ -34,14 +33,14 @@ function __drop_all_probs
     set -U FD_PROB_CURRENT "unset"
 end
 
-function _fdp_test_can_append_to_named_section1 -d "try to insert a string in the correct part of the current problem"
+function can_append_to_named_section1 -d "try to insert a string in the correct part of the current problem"
     assert (test $FD_PROB_CURRENT = 'unset') "current problem should be unset. Was $FD_PROB_CURRENT"
     problem_start_new_problem_file "title" "some summary"
     assert (test $FD_PROB_CURRENT != 'unset') "current problem should not be set. Was $FD_PROB_CURRENT"
     assert (test -f $FD_PROB_CURRENT) "should create the new problem file"
 end
 
-function _fdp_test_new_prob_file_contains_title
+function new_prob_file_contains_title
     # arrange
     set -l title sghsjdjdhgfjhsjs
     set -l summary jfhjdhgfjdghfgjdfd
@@ -55,7 +54,7 @@ function _fdp_test_new_prob_file_contains_title
     assert (grep $summary $FD_PROB_CURRENT >/dev/null) "should be able to find the title in the file"
 end
 
-function _fdp_test_new_prob_file_contains_scaffolding
+function new_prob_file_contains_scaffolding
     # arrange
     set -l title sghsjdjdhgfjhsjs
     set -l summary jfhjdhgfjdghfgjdfd
@@ -68,15 +67,26 @@ function _fdp_test_new_prob_file_contains_scaffolding
     assert (grep "# KNOWN" $FD_PROB_CURRENT >/dev/null) "must contain '# KNOWN'"
     assert (grep "# IDEAS" $FD_PROB_CURRENT >/dev/null) "must contain '# IDEAS'"
     assert (grep "# QUESTIONS" $FD_PROB_CURRENT >/dev/null) "must contain '# QUESTIONS'"
-    assert (grep "# TESETS" $FD_PROB_CURRENT >/dev/null) "must contain '# TESTS'"
+    assert (grep "# TESTS" $FD_PROB_CURRENT >/dev/null) "must contain '# TESTS'"
 end
 
-function _fdp_test_eq_fail
-    assert_fails (test 'hello' = 'world') "hello should not equal world"
+function switching_problem_switches_current_problem_file
+    # arrange
+    set -l title title1
+    set -l summary summary1
+
+    # act
+    problem_start_new_problem_file $title $summary
+    set -l init_prob_path $FD_PROB_CURRENT
+    
+    # assert
+    assert (test -f $FD_PROB_CURRENT) "current prob should exist as a file"
+    
+    set -l title title2
+    set -l summary summary2
+    problem_start_new_problem_file $title $summary
+    set -l new_prob_path $FD_PROB_CURRENT
+    assert (test -f $FD_PROB_CURRENT) "current prob should exist as a file"
+
+    assert_neq $init_prob_path $new_prob_path
 end
-
-function _fdp_test_eq_pass
-    assert_eq 'hello' 'hello'
-end
-
-

@@ -5,22 +5,27 @@ function __fixture -d "run all the unit tests"
     set -l test_cases $argv[-1..3]
     set -l cases_to_run (count $test_cases)
     ok "FUnit running $cases_to_run cases"
+    set scount 0
+    set fcount 0
     for t in $test_cases
         eval $fn_setup
         if eval $t ^ /dev/null
             log_test_run $t "PASS"
+            set scount (math $scount + 1)
         else
             log_test_run $t "FAIL"
+            set fcount (math $fcount + 1)
         end
         eval $fn_teardown
     end
+    ok "FUnit outcome: $scount successes / $fcount failures"
 end
 
 function log_test_run
     set_color yellow
     printf "%s" "=> "
     set_color normal
-    printf "%s" $argv[1]
+    printf "%s" (string replace -a "_" " " $argv[1])
     if test $argv[2] = "PASS"
         set_color green
     else
