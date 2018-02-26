@@ -40,3 +40,7 @@ function problem_edit_current -d "open editor to edit current problem"
     set -l cmd $EDITOR $FD_PROB_CURRENT
     eval $cmd
 end
+
+function fact -a the_fact
+    true
+end
