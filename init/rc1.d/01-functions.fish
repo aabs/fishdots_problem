@@ -19,7 +19,7 @@ function problem
     case task
       problem_task $argv[2]
     case summarise
-      problem_save
+      problem_summarise
     case save
       problem_save
     case sync
