@@ -6,6 +6,10 @@ function problem
   switch $argv[1]
     case home
       cd $FD_PROB_HOME
+    case ls
+      find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name '.git'
+    case open
+      problem_open #$argv[2]
     case create
       problem_create $argv[2] $argv[3]
     case known
@@ -40,6 +44,28 @@ function problem_create -a title summary
     echo -e "# TESTS\n\n" > $FD_PROB_CURRENT/tests.md
     echo -e "# IDEAS\n\n" > $FD_PROB_CURRENT/ideas.md
     echo -e "# TASKS\n\n" > $FD_PROB_CURRENT/tasks.md
+end
+
+function problem_open -d "select from existing problems"
+  set matches (find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name ".git")
+  if test 1 -eq (count $matches) and test -d $matches
+    set -U FD_PROB_CURRENT $matches[1]
+    echo "chose option 1"
+    return
+  end
+  set -g dcmd "dialog --stdout --no-tags --menu 'select the file to edit' 20 60 20 " 
+  set c 1
+  for option in $matches
+    set l (get_file_relative_path $option)
+    set -g dcmd "$dcmd $c '$l'"
+    set c (math $c + 1)
+  end
+  set choice (eval "$dcmd")
+  clear
+  if test $status -eq 0
+  echo "edit option $choice"
+    set -U FD_PROB_CURRENT $matches[$choice]
+  end
 end
 
 function problem_known -a the_fact
@@ -82,18 +108,11 @@ function problem_consolidate
 end
 
 function problem_save -d "save all new or modified notes locally"
-  _enter_problem_home
-  git add -A .
-  git commit -m "prob updates and additions"
-  _leave_problem_home
+  fishdots_git_save $FD_PROB_HOME  "prob updates and additions"
 end
 
 function problem_sync -d "save all notes to origin repo"
-  problem_save
-  _enter_problem_home
-  git fetch --all -t
-  git push origin (git branch-name)
-  _leave_problem_home
+  fishdots_git_sync $FD_PROB_HOME  "prob updates and additions"
 end
 
 function _enter_problem_home
