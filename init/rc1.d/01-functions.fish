@@ -135,6 +135,10 @@ function problem_help -d "display usage info"
     echo "  "
     echo""
 
+    echo "problem open"
+    echo "  select a problem to work on"
+    echo""
+
     echo "problem create"
     echo "  "
     echo""
