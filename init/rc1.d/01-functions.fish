@@ -5,37 +5,46 @@ function problem
   end
   switch $argv[1]
     case home
-      cd $FD_PROB_HOME
+      emit problem_home
     case ls
-      find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name '.git'
+      emit problem_ls
     case open
-      problem_open #$argv[2]
+      emit problem_open
     case create
-      problem_create $argv[2] $argv[3]
+      emit problem_new  $argv[2] $argv[3]
     case known
-      problem_known $argv[2]
+      emit problem_known $argv[2]
     case question
-      problem_question $argv[2]
+      emit problem_question $argv[2]
     case test
-      problem_test $argv[2]
+      emit problem_test $argv[2]
     case idea
-      problem_idea $argv[2]
+      emit problem_idea $argv[2]
     case task
-      problem_task $argv[2]
+      emit problem_task $argv[2]
+      emit task_new $argv[2] # integration into fishdots_todo
     case summarise
-      problem_summarise
+      emit problem_summarise
     case save
-      problem_save
+      emit problem_save
     case sync
-      problem_sync
+      emit problem_sync
     case consolidate
-      problem_consolidate
+      emit problem_consolidate
     case '*'
-      problem_help
+      emit problem_help
   end
 end
 
-function problem_create -a title summary
+function _prob_ls -e problem_ls 
+  find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name '.git'
+end
+
+function problem_home -e problem_home
+  cd $FD_PROB_HOME
+end
+
+function problem_create -e problem_new -a title summary
     set -U FD_PROB_CURRENT (problem_create_path $title)
     mkdir -p $FD_PROB_CURRENT
     echo -e "# PROBLEM: $title\n\n- $summary" > $FD_PROB_CURRENT/problem.md
@@ -46,7 +55,7 @@ function problem_create -a title summary
     echo -e "# TASKS\n\n" > $FD_PROB_CURRENT/tasks.md
 end
 
-function problem_open -d "select from existing problems"
+function problem_open -e problem_open -d "select from existing problems"
   set matches (find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name ".git")
   if test 1 -eq (count $matches) and test -d $matches
     set -U FD_PROB_CURRENT $matches[1]
@@ -68,27 +77,27 @@ function problem_open -d "select from existing problems"
   end
 end
 
-function problem_known -a the_fact
+function problem_known  -e problem_known -a the_fact
     echo -e "- $the_fact" >> $FD_PROB_CURRENT/known.md
 end
 
-function problem_question -a the_question
+function problem_question -e problem_question -a the_question
     echo -e "- $the_question" >> $FD_PROB_CURRENT/questions.md
 end
 
-function problem_test -a the_test
+function problem_test -e problem_test -a the_test
     echo -e "- $the_test" >> $FD_PROB_CURRENT/tests.md
 end
 
-function problem_idea -a the_idea
+function problem_idea -e problem_idea -a the_idea
     echo -e "- $the_idea" >> $FD_PROB_CURRENT/ideas.md
 end
 
-function problem_task -a the_task
+function problem_task -e problem_task -a the_task
     echo -e "- $the_task" >> $FD_PROB_CURRENT/tasks.md
 end
 
-function problem_summarise
+function problem_summarise -e problem_summarise
     cat $FD_PROB_CURRENT/problem.md
     echo ""
     cat $FD_PROB_CURRENT/known.md
@@ -102,16 +111,16 @@ function problem_summarise
     cat $FD_PROB_CURRENT/tasks.md
 end
 
-function problem_consolidate
+function problem_consolidate -e problem_consolidate
     set -l target "$FD_PROB_HOME"/(basename $FD_PROB_CURRENT).md
     summarise > $target
 end
 
-function problem_save -d "save all new or modified notes locally"
+function problem_save -e problem_save -d "save all new or modified notes locally"
   fishdots_git_save $FD_PROB_HOME  "prob updates and additions"
 end
 
-function problem_sync -d "save all notes to origin repo"
+function problem_sync -e problem_sync -d "save all notes to origin repo"
   fishdots_git_sync $FD_PROB_HOME  "prob updates and additions"
 end
 
@@ -125,7 +134,7 @@ function _leave_problem_home
 end
 
 
-function problem_help -d "display usage info"
+function problem_help -e problem_help -d "display usage info"
   echo "Fishdots problems Usage"
   echo "===================="
   echo "problem <command> [options] [args]"
