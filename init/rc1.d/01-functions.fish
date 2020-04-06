@@ -14,65 +14,51 @@ define_subcommand problem sync on_problem_sync "save all edits then Sync to orig
 define_subcommand problem test on_problem_test "Record a Test to perform"
 define_subcommand problem task on_problem_task "Record a Task to perform"
 
-function prob_ls -e on_problem_ls 
-  find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name '.git'
+function prob_ls -e on_problem_ls
+    find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name '.git'
 end
 
 function problem_home -e on_problem_home
-  cd $FD_PROB_HOME
+    cd $FD_PROB_HOME
 end
 
 function problem_create -e on_problem_create -a title summary
     set -U FD_PROB_CURRENT (problem_create_path $title)
     mkdir -p $FD_PROB_CURRENT
-    echo -e "# PROBLEM: $title\n\n- $summary" > $FD_PROB_CURRENT/problem.md
-    echo -e "# KNOWN\n\n" > $FD_PROB_CURRENT/known.md
-    echo -e "# QUESTIONS\n\n" > $FD_PROB_CURRENT/questions.md
-    echo -e "# TESTS\n\n" > $FD_PROB_CURRENT/tests.md
-    echo -e "# IDEAS\n\n" > $FD_PROB_CURRENT/ideas.md
-    echo -e "# TASKS\n\n" > $FD_PROB_CURRENT/tasks.md
+    echo -e "# PROBLEM: $title\n\n- $summary" >$FD_PROB_CURRENT/problem.md
+    echo -e "# KNOWN\n\n" >$FD_PROB_CURRENT/known.md
+    echo -e "# QUESTIONS\n\n" >$FD_PROB_CURRENT/questions.md
+    echo -e "# TESTS\n\n" >$FD_PROB_CURRENT/tests.md
+    echo -e "# IDEAS\n\n" >$FD_PROB_CURRENT/ideas.md
+    echo -e "# TASKS\n\n" >$FD_PROB_CURRENT/tasks.md
 end
 
 function problem_open -e on_problem_open -d "select from existing problems"
-  set matches (find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name ".git")
-  if test 1 -eq (count $matches) and test -d $matches
-    set -U FD_PROB_CURRENT $matches[1]
-    echo "chose option 1"
-    return
-  end
-  set -g dcmd "dialog --stdout --no-tags --menu 'select the file to edit' 20 60 20 " 
-  set c 1
-  for option in $matches
-    set l (get_file_relative_path $option)
-    set -g dcmd "$dcmd $c '$l'"
-    set c (math $c + 1)
-  end
-  set choice (eval "$dcmd")
-  clear
-  if test $status -eq 0
-  echo "edit option $choice"
-    set -U FD_PROB_CURRENT $matches[$choice]
-  end
+    set matches (find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name ".git")
+    fd_menu $matches
+    if test $status -eq 0
+        set -U FD_PROB_CURRENT $matches[$fd_selected_item]
+    end
 end
 
-function problem_known  -e on_problem_known -a the_fact
-    echo -e "- $the_fact" >> $FD_PROB_CURRENT/known.md
+function problem_known -e on_problem_known -a the_fact
+    echo -e "- $the_fact" >>$FD_PROB_CURRENT/known.md
 end
 
 function problem_question -e on_problem_question -a the_question
-    echo -e "- $the_question" >> $FD_PROB_CURRENT/questions.md
+    echo -e "- $the_question" >>$FD_PROB_CURRENT/questions.md
 end
 
 function problem_test -e on_problem_test -a the_test
-    echo -e "- $the_test" >> $FD_PROB_CURRENT/tests.md
+    echo -e "- $the_test" >>$FD_PROB_CURRENT/tests.md
 end
 
 function problem_idea -e on_problem_idea -a the_idea
-    echo -e "- $the_idea" >> $FD_PROB_CURRENT/ideas.md
+    echo -e "- $the_idea" >>$FD_PROB_CURRENT/ideas.md
 end
 
 function problem_task -e on_problem_task -a the_task
-    echo -e "- $the_task" >> $FD_PROB_CURRENT/tasks.md
+    echo -e "- $the_task" >>$FD_PROB_CURRENT/tasks.md
 end
 
 function problem_summarise -e on_problem_summarise
@@ -91,24 +77,24 @@ end
 
 function problem_consolidate -e on_problem_consolidate
     set -l target "$FD_PROB_HOME"/(basename $FD_PROB_CURRENT).md
-    summarise > $target
+    summarise >$target
 end
 
 function problem_save -e on_problem_save -d "save all new or modified notes locally"
-  fishdots_git_save $FD_PROB_HOME  "prob updates and additions"
+    fishdots_git_save $FD_PROB_HOME "prob updates and additions"
 end
 
 function problem_sync -e on_problem_sync -d "save all notes to origin repo"
-  fishdots_git_sync $FD_PROB_HOME  "prob updates and additions"
+    fishdots_git_sync $FD_PROB_HOME "prob updates and additions"
 end
 
 function _enter_problem_home
-  pushd .
-  cd $FD_PROB_HOME  
+    pushd .
+    cd $FD_PROB_HOME
 end
 
 function _leave_problem_home
-  popd
+    popd
 end
 
 
