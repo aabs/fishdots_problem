@@ -43,7 +43,7 @@ function problem_open -e on_problem_open -d "select from existing problems"
     set -g dcmd "dialog --stdout --no-tags --menu 'select the file to edit' 20 60 20 "
     set c 1
     for option in $matches
-        set l (get_file_relative_path $option)
+        set l (basename "$option")
         set -g dcmd "$dcmd $c '$l'"
         set c (math $c + 1)
     end
