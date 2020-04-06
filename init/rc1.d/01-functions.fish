@@ -35,9 +35,23 @@ end
 
 function problem_open -e on_problem_open -d "select from existing problems"
     set matches (find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name ".git")
-    fd_menu $matches
+    if test 1 -eq (count $matches) and test -d $matches
+        set -U FD_PROB_CURRENT $matches[1]
+        echo "chose option 1"
+        return
+    end
+    set -g dcmd "dialog --stdout --no-tags --menu 'select the file to edit' 20 60 20 "
+    set c 1
+    for option in $matches
+        set l (get_file_relative_path $option)
+        set -g dcmd "$dcmd $c '$l'"
+        set c (math $c + 1)
+    end
+    set choice (eval "$dcmd")
+    clear
     if test $status -eq 0
-        set -U FD_PROB_CURRENT $matches[$fd_selected_item]
+        echo "edit option $choice"
+        set -U FD_PROB_CURRENT $matches[$choice]
     end
 end
 
