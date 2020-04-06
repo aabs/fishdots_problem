@@ -35,10 +35,13 @@ end
 
 function problem_open -e on_problem_open -d "select from existing problems"
     set matches (find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name ".git")
-    if test 1 -eq (count $matches) and test -d $matches
-        set -U FD_PROB_CURRENT $matches[1]
-        echo "chose option 1"
-        return
+
+    if test 1 -eq (count $matches)
+        if test -d $matches
+            set -U FD_PROB_CURRENT $matches[1]
+            echo "chose option 1"
+            return
+        end
     end
     set -g dcmd "dialog --stdout --no-tags --menu 'select the file to edit' 20 60 20 "
     set c 1
