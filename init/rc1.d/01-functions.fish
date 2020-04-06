@@ -1,50 +1,28 @@
-function problem
-  if test 0 -eq (count $argv)
-    problem_help
-    return
-  end
-  switch $argv[1]
-    case home
-      emit problem_home
-    case ls
-      emit problem_ls
-    case open
-      emit problem_open
-    case create
-      emit problem_new  $argv[2] $argv[3]
-    case known
-      emit problem_known $argv[2]
-    case question
-      emit problem_question $argv[2]
-    case test
-      emit problem_test $argv[2]
-    case idea
-      emit problem_idea $argv[2]
-    case task
-      emit problem_task $argv[2]
-      emit task_new $argv[2] # integration into fishdots_todo
-    case summarise
-      emit problem_summarise
-    case save
-      emit problem_save
-    case sync
-      emit problem_sync
-    case consolidate
-      emit problem_consolidate
-    case '*'
-      emit problem_help
-  end
-end
 
-function _prob_ls -e problem_ls 
+define_command problem "fishdots plugin for working through problems"
+define_subcommand problem consolidate on_problem_consolidate "Consolidate all of the components of the current problem in a single file"
+define_subcommand problem create on_problem_create "Create a new problem to solve"
+define_subcommand problem home on_problem_home "switch to the home folder of the current problem"
+define_subcommand problem idea on_problem_idea "Record an idea relating to the current problem"
+define_subcommand problem known on_problem_known "Record a fact that is known "
+define_subcommand problem ls on_problem_ls "List all of the problems"
+define_subcommand problem open on_problem_open "choose an existing problem to work on"
+define_subcommand problem question on_problem_question "Record a question to be answered"
+define_subcommand problem summarise on_problem_summarise "Summarise everything recorded for the current problem"
+define_subcommand problem save on_problem_save "Save all edits locally"
+define_subcommand problem sync on_problem_sync "save all edits then Sync to origin"
+define_subcommand problem test on_problem_test "Record a Test to perform"
+define_subcommand problem task on_problem_task "Record a Task to perform"
+
+function prob_ls -e on_problem_ls 
   find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name '.git'
 end
 
-function problem_home -e problem_home
+function problem_home -e on_problem_home
   cd $FD_PROB_HOME
 end
 
-function problem_create -e problem_new -a title summary
+function problem_create -e on_problem_create -a title summary
     set -U FD_PROB_CURRENT (problem_create_path $title)
     mkdir -p $FD_PROB_CURRENT
     echo -e "# PROBLEM: $title\n\n- $summary" > $FD_PROB_CURRENT/problem.md
@@ -55,7 +33,7 @@ function problem_create -e problem_new -a title summary
     echo -e "# TASKS\n\n" > $FD_PROB_CURRENT/tasks.md
 end
 
-function problem_open -e problem_open -d "select from existing problems"
+function problem_open -e on_problem_open -d "select from existing problems"
   set matches (find $FD_PROB_HOME/ -maxdepth 1 -mindepth 1 -type d ! -name ".git")
   if test 1 -eq (count $matches) and test -d $matches
     set -U FD_PROB_CURRENT $matches[1]
@@ -77,27 +55,27 @@ function problem_open -e problem_open -d "select from existing problems"
   end
 end
 
-function problem_known  -e problem_known -a the_fact
+function problem_known  -e on_problem_known -a the_fact
     echo -e "- $the_fact" >> $FD_PROB_CURRENT/known.md
 end
 
-function problem_question -e problem_question -a the_question
+function problem_question -e on_problem_question -a the_question
     echo -e "- $the_question" >> $FD_PROB_CURRENT/questions.md
 end
 
-function problem_test -e problem_test -a the_test
+function problem_test -e on_problem_test -a the_test
     echo -e "- $the_test" >> $FD_PROB_CURRENT/tests.md
 end
 
-function problem_idea -e problem_idea -a the_idea
+function problem_idea -e on_problem_idea -a the_idea
     echo -e "- $the_idea" >> $FD_PROB_CURRENT/ideas.md
 end
 
-function problem_task -e problem_task -a the_task
+function problem_task -e on_problem_task -a the_task
     echo -e "- $the_task" >> $FD_PROB_CURRENT/tasks.md
 end
 
-function problem_summarise -e problem_summarise
+function problem_summarise -e on_problem_summarise
     cat $FD_PROB_CURRENT/problem.md
     echo ""
     cat $FD_PROB_CURRENT/known.md
@@ -111,16 +89,16 @@ function problem_summarise -e problem_summarise
     cat $FD_PROB_CURRENT/tasks.md
 end
 
-function problem_consolidate -e problem_consolidate
+function problem_consolidate -e on_problem_consolidate
     set -l target "$FD_PROB_HOME"/(basename $FD_PROB_CURRENT).md
     summarise > $target
 end
 
-function problem_save -e problem_save -d "save all new or modified notes locally"
+function problem_save -e on_problem_save -d "save all new or modified notes locally"
   fishdots_git_save $FD_PROB_HOME  "prob updates and additions"
 end
 
-function problem_sync -e problem_sync -d "save all notes to origin repo"
+function problem_sync -e on_problem_sync -d "save all notes to origin repo"
   fishdots_git_sync $FD_PROB_HOME  "prob updates and additions"
 end
 
@@ -133,61 +111,6 @@ function _leave_problem_home
   popd
 end
 
-
-function problem_help -e problem_help -d "display usage info"
-  echo "Fishdots problems Usage"
-  echo "===================="
-  echo "problem <command> [options] [args]"
-  echo ""
-
-    echo "problem home"
-    echo "  "
-    echo""
-
-    echo "problem open"
-    echo "  select a problem to work on"
-    echo""
-
-    echo "problem create"
-    echo "  "
-    echo""
-
-    echo "problem known"
-    echo "  "
-    echo""
-
-    echo "problem question"
-    echo "  "
-    echo""
-
-    echo "problem test"
-    echo "  "
-    echo""
-
-    echo "problem idea"
-    echo "  "
-    echo""
-
-    echo "problem task"
-    echo "  "
-    echo""
-
-    echo "problem summarise"
-    echo "  "
-    echo""
-
-    echo "problem sync"
-    echo "  "
-    echo""
-
-    echo "problem sync"
-    echo "  "
-    echo""
-
-    echo "problem consolidate"
-    echo "  "
-    echo""
-end
 
 function problem_create_path -d "USAGE: problem_create_path 'blah' => ~/.problems/2018-02-21.mojo.md"
     set -l title_slug (string sub -l 32 (string replace " " "_" $argv[1]))
