@@ -6,7 +6,7 @@ define_subcommand problem home on_problem_home "switch to the home folder of the
 define_subcommand problem idea on_problem_idea "Record an idea relating to the current problem"
 define_subcommand problem known on_problem_known "Record a fact that is known "
 define_subcommand problem ls on_problem_ls "List all of the problems"
-define_subcommand problem open on_problem_open "choose an existing problem to work on"
+define_subcommand_nonevented problem open problem_open "choose an existing problem to work on"
 define_subcommand problem question on_problem_question "Record a question to be answered"
 define_subcommand problem summarise on_problem_summarise "Summarise everything recorded for the current problem"
 define_subcommand problem save on_problem_save "Save all edits locally"
@@ -50,9 +50,8 @@ function problem_open -e on_problem_open -d "select from existing problems"
         set -g dcmd "$dcmd $c '$l'"
         set c (math $c + 1)
     end
-    echo dialog command $dcmd
-    set choice (eval "$dcmd")
-    clear
+    set choice (eval "$dcmd") 
+    #clear
     if test $status -eq 0
         echo "edit option $choice"
         set -U FD_PROB_CURRENT $matches[$choice]
