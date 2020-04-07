@@ -56,6 +56,9 @@ function problem_open -e on_problem_open -d "select from existing problems"
         echo "edit option $choice"
         set -U FD_PROB_CURRENT $matches[$choice]
     end
+
+    clear
+    problem_summarise
 end
 
 function problem_known -e on_problem_known -a the_fact
