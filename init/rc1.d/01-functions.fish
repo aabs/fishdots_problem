@@ -1,4 +1,3 @@
-
 define_command problem "fishdots plugin for working through problems"
 define_subcommand_nonevented problem consolidate problem_consolidate "Consolidate all of the components of the current problem in a single file"
 define_subcommand_nonevented problem create problem_create "Create a new problem to solve"
@@ -61,24 +60,24 @@ function problem_open  -d "select from existing problems"
     problem_summarise
 end
 
-function problem_known  -a the_fact
-    echo -e "- $the_fact" >>$FD_PROB_CURRENT/known.md
+function problem_known
+    echo -e "- $argv" >>$FD_PROB_CURRENT/known.md
 end
 
-function problem_question  -a the_question
-    echo -e "- $the_question" >>$FD_PROB_CURRENT/questions.md
+function problem_question
+    echo -e "- $argv" >>$FD_PROB_CURRENT/questions.md
 end
 
-function problem_test  -a the_test
-    echo -e "- $the_test" >>$FD_PROB_CURRENT/tests.md
+function problem_test
+    echo -e "- $argv" >>$FD_PROB_CURRENT/tests.md
 end
 
-function problem_idea  -a the_idea
-    echo -e "- $the_idea" >>$FD_PROB_CURRENT/ideas.md
+function problem_idea
+    echo -e "- $argv" >>$FD_PROB_CURRENT/ideas.md
 end
 
-function problem_task  -a the_task
-    echo -e "- $the_task" >>$FD_PROB_CURRENT/tasks.md
+function problem_task
+    echo -e "- $argv" >>$FD_PROB_CURRENT/tasks.md
 end
 
 function problem_summarise 
